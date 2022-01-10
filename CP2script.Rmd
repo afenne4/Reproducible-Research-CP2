@@ -1,0 +1,23 @@
+---
+title: "Course Project 2"
+author: "Alex Fennell"
+output: html_document
+---
+
+```{r libraries, message=FALSE}
+    library(dplyr)
+    library(ggplot2)
+    library(lubridate)
+```
+
+## Loading and preprocessing the data
+
+```{r download-data, cache=TRUE}
+fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+if (!file.exists("CP2data.csv.bz2")){
+    download.file(fileurl,"CP2data.csv.bz2",method="curl")
+}
+storm<-read.csv("CP2data.csv.bz2",stringsAsFactors = FALSE)
+storm$BGN_DATE<-strptime(storm$BGN_DATE,format="%m/%d/%Y")
+
+```
