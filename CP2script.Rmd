@@ -10,7 +10,7 @@ output: html_document
     library(lubridate)
 ```
 
-## Loading and preprocessing the data
+## Loading the data
 
 ```{r download-data, cache=TRUE}
 fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
@@ -18,6 +18,17 @@ if (!file.exists("CP2data.csv.bz2")){
     download.file(fileurl,"CP2data.csv.bz2",method="curl")
 }
 storm<-read.csv("CP2data.csv.bz2",stringsAsFactors = FALSE)
-storm$BGN_DATE<-strptime(storm$BGN_DATE,format="%m/%d/%Y")
+```
+
+Since we are interested in the public health and economic consequences of various
+event types, the first thing I want to do is select rows that have some amount of
+property damage, crop damage, fatalities, or injuries.
+```{r processing the data}
+stormfilt<-storm%>%
+    filter(PROPDMG>0 | CROPDMG>0 | FATALITIES>0 |INJURIES>0)
+stormfilt$BGN_DATE<-strptime(stormfilt$BGN_DATE,format="%m/%d/%Y")
+stormfilt$BGN_DATE<-as.POSIXct(stormfilt$BGN_DATE)
+stormfilt$Year<-format(stormfilt$BGN_DATE,"%Y")
+stormfilt$EVTYPE<-as.factor(stormfilt$EVTYPE)
 
 ```
