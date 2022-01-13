@@ -54,7 +54,11 @@ stormET<-c(stormeventtypes[[1]][,1],stormeventtypes[[1]][,3])
 #Remove entries that are not event types
 stormET<-stormET[-c(1,2,27,28)]
 stormET<-toupper(stormET)
-stormfilt$EVTYPECOND<-stormET[amatch(stormfilt$EVTYPE,stormET,maxDist = 7,matchNA = FALSE)]
+#used jaro-winkler distance (jw) since there are many entries in which there are
+#abbreviations and extra words unrelated to categories. This method worked better
+#than the default, and resolved NA matches that occurred with the default
+stormfilt$EVTYPECOND<-stormET[amatch(stormfilt$EVTYPE,stormET,method="jw",maxDist = 7)]
+
 ```
 
 
