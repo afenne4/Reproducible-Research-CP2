@@ -7,7 +7,11 @@ output: html_document
 ```{r libraries, message=FALSE}
     library(dplyr)
     library(ggplot2)
-    library(lubridate)
+    library(tidyverse)
+    library(stringdist)
+## As a note, for tabulizer, the user needs to have Java installed as the same 
+#bit format as their R version (e.g. both 64 bit)
+    library(tabulizer)
 ```
 
 ## Loading the data
@@ -23,11 +27,39 @@ storm<-read.csv("CP2data.csv.bz2",stringsAsFactors = FALSE)
 Since we are interested in the public health and economic consequences of various
 event types, the first thing I want to do is select rows that have some amount of
 property damage, crop damage, fatalities, or injuries.
-```{r processing the data}
+```{r processing the data,cache=TRUE}
 stormfilt<-storm%>%
     filter(PROPDMG>0 | CROPDMG>0 | FATALITIES>0 |INJURIES>0)
-stormfilt$BGN_DATE<-strptime(stormfilt$BGN_DATE,format="%m/%d/%Y")
-stormfilt$BGN_DATE<-as.POSIXct(stormfilt$BGN_DATE)
+    stormfilt$BGN_DATE<-strptime(stormfilt$BGN_DATE,format="%m/%d/%Y")
+    stormfilt$BGN_DATE<-as.POSIXct(stormfilt$BGN_DATE)
+    stormfilt$EVTYPE<-toupper(stormfilt$EVTYPE)
+    stormfilt<-stormfilt[stormfilt$EVTYPE!="?",]
+```
+
+Now I am going to download the list of event types (EVTYPES) from the following
+link. Using this list I will then match up the official event types with those
+in the storm data set. These event types are listed on page 6 of the document
+under "2.1.1 Storm Data Event Table". The locate areas function brings up a UI
+showing the sixth page of the pdf which the user can use to select the area around
+the table of text. The extract tables function will then use these dimensions in
+the area argument to pull items from there. I have saved the dimensions in a list
+for the sake of reproducibility.
+```{r}
+fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf"
+#x<-locate_areas(fileurl,pages=6)
+x<-list(c(197.6,67.6,564.6,524))
+stormeventtypes<-extract_tables(fileurl,output="data.frame",pages=6,
+                                area=x)
+stormET<-c(stormeventtypes[[1]][,1],stormeventtypes[[1]][,3])
+#Remove entries that are not event types
+stormET<-stormET[-c(1,2,27,28)]
+stormET<-toupper(stormET)
+stormfilt$EVTYPECOND<-stormET[amatch(stormfilt$EVTYPE,stormET,maxDist = 7,matchNA = FALSE)]
+```
+
+
+
+
 stormfilt$Year<-format(stormfilt$BGN_DATE,"%Y")
 stormfilt$EVTYPE<-as.factor(stormfilt$EVTYPE)
 
