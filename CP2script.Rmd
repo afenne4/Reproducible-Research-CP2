@@ -164,7 +164,6 @@ reorder_within <- function(x, by, within, fun = mean, sep = "___", ...) {
 ```
 
 ```{r Health plots}
-color<-brewer.pal(8,"Set1")
 healthdata %>%
      gather(key,value,-EVTYPECOND) %>%
     ggplot(aes(x=reorder_within(EVTYPECOND,-value,key),y=value,
