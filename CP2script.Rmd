@@ -14,7 +14,7 @@ output: html_document
     library(tabulizer)
 ```
 
-## Loading the data
+## Data Processing
 
 ```{r download-data, cache=TRUE}
 fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
@@ -32,7 +32,7 @@ data from particular years. I also remove event types of "?" since that is not
 a useful category.
 ```{r processing the data,cache=TRUE}
 stormfilt<-storm%>%
-    filter(PROPDMG>0 | CROPDMG>0 | FATALITIES>0 |INJURIES>0)
+    filter(PROPDMG>0 | CROPDMG>0 | FATALITIES>0 | INJURIES>0)
 
     stormfilt$BGN_DATE<-strptime(stormfilt$BGN_DATE,format="%m/%d/%Y")
     stormfilt$BGN_DATE<-as.POSIXct(stormfilt$BGN_DATE)
@@ -96,3 +96,27 @@ stormfilt<-stormfilt %>%
                     TRUE ~ CROPDMG
                 )))
 ```
+
+
+## Data Analysis
+
+The data has now been cleaned and is ready to be examined. The first question
+to be addressed is which types of events are most harmful to population health.
+There are two variables in the data set, Fatalities and Injuries which will act
+as measures of population health. We will begin our analysis by examining the
+total fatalities and injuries caused by various weather event types. I am using
+total because this gives the best indication of the severity of the weather event.
+This will then help to filter out which event types are of the most interest.
+
+```{r Population health analysis}
+totalstats<-stormfilt %>%
+    filter(FATALITIES>0 | INJURIES>0) %>%
+    group_by(EVTYPECOND) %>%
+    summarise(totalFat=sum(FATALITIES),totalInj=sum(INJURIES))
+View(totalstats)
+```
+
+
+
+
+
