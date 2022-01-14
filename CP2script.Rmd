@@ -26,13 +26,18 @@ storm<-read.csv("CP2data.csv.bz2",stringsAsFactors = FALSE)
 
 Since we are interested in the public health and economic consequences of various
 event types, the first thing I want to do is select rows that have some amount of
-property damage, crop damage, fatalities, or injuries.
+property damage, crop damage, fatalities, or injuries. I also change the date
+to a usable format and extract the year information so I can more easily examine
+data from particular years. I also remove event types of "?" since that is not
+a useful category.
 ```{r processing the data,cache=TRUE}
 stormfilt<-storm%>%
     filter(PROPDMG>0 | CROPDMG>0 | FATALITIES>0 |INJURIES>0)
+
     stormfilt$BGN_DATE<-strptime(stormfilt$BGN_DATE,format="%m/%d/%Y")
     stormfilt$BGN_DATE<-as.POSIXct(stormfilt$BGN_DATE)
     stormfilt$EVTYPE<-toupper(stormfilt$EVTYPE)
+    stormfilt$Year<-format(stormfilt$BGN_DATE,"%Y")
     stormfilt<-stormfilt[stormfilt$EVTYPE!="?",]
 ```
 
@@ -44,7 +49,7 @@ showing the sixth page of the pdf which the user can use to select the area arou
 the table of text. The extract tables function will then use these dimensions in
 the area argument to pull items from there. I have saved the dimensions in a list
 for the sake of reproducibility.
-```{r}
+```{r Clean Event Types}
 fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf"
 #x<-locate_areas(fileurl,pages=6)
 x<-list(c(197.6,67.6,564.6,524))
@@ -58,13 +63,36 @@ stormET<-toupper(stormET)
 #abbreviations and extra words unrelated to categories. This method worked better
 #than the default, and resolved NA matches that occurred with the default
 stormfilt$EVTYPECOND<-stormET[amatch(stormfilt$EVTYPE,stormET,method="jw",maxDist = 7)]
-
+stormfilt$EVTYPECOND<-as.factor(stormfilt$EVTYPECOND)
 ```
 
-
-
-
-stormfilt$Year<-format(stormfilt$BGN_DATE,"%Y")
-stormfilt$EVTYPE<-as.factor(stormfilt$EVTYPE)
-
+The next step is to use the CROPDMGEXP and PROPDMGEXP to adjust the actual crop
+and property damage totals. There are a few entries in these that only change the 
+damage value by a trivial amount (hundreds of dollars) and these will be removed
+from the data set, since they will not have a large impact on the analysis as 
+damage is typically in the millions or billions. These entries also only account
+for a couple hundred observations.
+```{r Update damage costs}
+stormfilt$PROPDMGEXP <- toupper(stormfilt$PROPDMGEXP) 
+stormfilt$CROPDMGEXP <- toupper(stormfilt$CROPDMGEXP)
+#Instances of *EXP I am looking to keep
+modifier<-c("M","K","B","H","")
+stormfilt<-filter(stormfilt,CROPDMGEXP %in% modifier & PROPDMGEXP %in% modifier)
+stormfilt<-stormfilt %>%
+                mutate(.,PROPDMGFULL= with(.,case_when(
+                    (PROPDMGEXP=="H") ~ PROPDMG*100,
+                    (PROPDMGEXP=="K") ~ PROPDMG*1000,
+                    (PROPDMGEXP=="M") ~ PROPDMG*10^6,
+                    (PROPDMGEXP=="B") ~ PROPDMG*10^9,
+                    TRUE ~ PROPDMG
+                )))
+                          
+stormfilt<-stormfilt %>%
+                mutate(.,CROPDMGFULL= with(.,case_when(
+                    (CROPDMGEXP=="H") ~ CROPDMG*100,
+                    (CROPDMGEXP=="K") ~ CROPDMG*1000,
+                    (CROPDMGEXP=="M") ~ CROPDMG*10^6,
+                    (CROPDMGEXP=="B") ~ CROPDMG*10^9,
+                    TRUE ~ CROPDMG
+                )))
 ```
