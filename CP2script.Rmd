@@ -4,7 +4,7 @@ author: "Alex Fennell"
 output: html_document
 ---
 
-```{r libraries, message=FALSE}
+```{r libraries, message=FALSE,warning=FALSE}
     library(dplyr)
     library(ggplot2)
     library(tidyverse)
@@ -12,6 +12,8 @@ output: html_document
 ## As a note, for tabulizer, the user needs to have Java installed as the same 
 #bit format as their R version (e.g. both 64 bit)
     library(tabulizer)
+    library(DT)
+    library(RColorBrewer)
 ```
 
 ## Data Processing
@@ -37,7 +39,7 @@ stormfilt<-storm%>%
     stormfilt$BGN_DATE<-strptime(stormfilt$BGN_DATE,format="%m/%d/%Y")
     stormfilt$BGN_DATE<-as.POSIXct(stormfilt$BGN_DATE)
     stormfilt$EVTYPE<-toupper(stormfilt$EVTYPE)
-    stormfilt$Year<-format(stormfilt$BGN_DATE,"%Y")
+    stormfilt$Year<-format(stormfilt$BGN_DATE,format="%Y")
     stormfilt<-stormfilt[stormfilt$EVTYPE!="?",]
 ```
 
@@ -107,16 +109,77 @@ as measures of population health. We will begin our analysis by examining the
 total fatalities and injuries caused by various weather event types. I am using
 total because this gives the best indication of the severity of the weather event.
 This will then help to filter out which event types are of the most interest.
+I am also only going to examine data from 1996 and on, since this is when all 
+categories of event types were collected. Otherwise the data would be extremely
+skewed to reflect data on event types that have been collected since the 
+beginning (e.g. Tornadoes)
 
 ```{r Population health analysis}
 totalstats<-stormfilt %>%
-    filter(FATALITIES>0 | INJURIES>0) %>%
+    filter(Year>"1995" & (FATALITIES>0 | INJURIES>0 )) %>%
     group_by(EVTYPECOND) %>%
-    summarise(totalFat=sum(FATALITIES),totalInj=sum(INJURIES))
-View(totalstats)
+    summarise(Total_Fatalities=sum(FATALITIES),Total_Injuries=sum(INJURIES))
+datatable(totalstats,class="cell-border stripe")
 ```
 
+Looking at this table with all the total fatalities and injuries, there is a wide
+range in total fatalities/injuries from single digits to thousands. Based on this
+lets use event types that are above the 80 percentile for total fatalities and injuries
+
+```{r Figures for Fatalities and injuries}
+#Establishing quantle cutoff values
+quant<-totalstats %>%
+        summarise(quantFAT=quantile(Total_Fatalities,probs=.75),
+              quantINJ=quantile(Total_Injuries,probs=.75))
+
+Eventnames<-totalstats$EVTYPECOND[totalstats$Total_Fatalities>quant$quantFAT & 
+               totalstats$Total_Injuries>quant$quantINJ]
+
+healthdata<-totalstats%>%
+    filter(EVTYPECOND %in% Eventnames)%>%
+    arrange(desc(Total_Fatalities))
+    
+healthdata$EVTYPECOND<-factor(healthdata$EVTYPECOND,levels=as.character(healthdata$EVTYPECOND))
+
+```
+
+### Plots Demonstrating harmful effects of Severe Weather events on Population Health
 
 
+```{r,echo=FALSE}
+#### This function is part of the TIDYTEXT package authored by Julia Silge
+#### and David Robinson. The package was not downloading this function
+#### so I used the code they have documented in the function
+#### https://rdrr.io/github/juliasilge/tidytext/src/R/reorder_within.R
 
+reorder_within <- function(x, by, within, fun = mean, sep = "___", ...) {
+  if (!is.list(within)) {
+    within <- list(within)
+  }
+
+  new_x <- do.call(paste, c(list(x, sep = sep), within))
+  stats::reorder(new_x, by, FUN = fun)
+}
+
+```
+
+```{r Health plots}
+color<-brewer.pal(8,"Set1")
+healthdata %>%
+     gather(key,value,-EVTYPECOND) %>%
+    ggplot(aes(x=reorder_within(EVTYPECOND,-value,key),y=value,
+                           fill=EVTYPECOND))+
+     geom_bar(stat="identity",position="dodge")+
+    facet_wrap(~key,scales="free")+
+    theme(axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.x = element_blank(),
+          plot.title = element_text(hjust=.5),
+          legend.position = "bottom")+
+    scale_fill_brewer(palette = "Set1")+
+    labs(y="Total Number of Incidents",
+         title = "Total Fatalities and Injuries from Weather")+
+    guides(fill=guide_legend(title="Weather Event"))
+
+```
 
