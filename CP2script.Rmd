@@ -51,7 +51,7 @@ showing the sixth page of the pdf which the user can use to select the area arou
 the table of text. The extract tables function will then use these dimensions in
 the area argument to pull items from there. I have saved the dimensions in a list
 for the sake of reproducibility.
-```{r Clean Event Types}
+```{r Clean Event Types, cache=TRUE}
 fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf"
 #x<-locate_areas(fileurl,pages=6)
 x<-list(c(197.6,67.6,564.6,524))
@@ -99,8 +99,7 @@ stormfilt<-stormfilt %>%
                 )))
 ```
 
-
-## Data Analysis
+# Results
 
 The data has now been cleaned and is ready to be examined. The first question
 to be addressed is which types of events are most harmful to population health.
@@ -119,14 +118,14 @@ totalstats<-stormfilt %>%
     filter(Year>"1995" & (FATALITIES>0 | INJURIES>0 )) %>%
     group_by(EVTYPECOND) %>%
     summarise(Total_Fatalities=sum(FATALITIES),Total_Injuries=sum(INJURIES))
-datatable(totalstats,class="cell-border stripe")
+#datatable(totalstats,class="cell-border stripe")
 ```
+### Data Selection
+The results from this analysis show that there is a wide range in total 
+fatalities/injuries from single digits to thousands. Based on this, lets use 
+event types that are above the 75 percentile for total fatalities and injuries
 
-Looking at this table with all the total fatalities and injuries, there is a wide
-range in total fatalities/injuries from single digits to thousands. Based on this
-lets use event types that are above the 80 percentile for total fatalities and injuries
-
-```{r Figures for Fatalities and injuries}
+```{r quantile data selection}
 #Establishing quantle cutoff values
 quant<-totalstats %>%
         summarise(quantFAT=quantile(Total_Fatalities,probs=.75),
@@ -143,10 +142,9 @@ healthdata$EVTYPECOND<-factor(healthdata$EVTYPECOND,levels=as.character(healthda
 
 ```
 
-### Plots Demonstrating harmful effects of Severe Weather events on Population Health
 
 
-```{r,echo=FALSE}
+```{r Tidytext function}
 #### This function is part of the TIDYTEXT package authored by Julia Silge
 #### and David Robinson. The package was not downloading this function
 #### so I used the code they have documented in the function
@@ -163,6 +161,8 @@ reorder_within <- function(x, by, within, fun = mean, sep = "___", ...) {
 
 ```
 
+### Plots Demonstrating harmful effects of Severe Weather events on Population Health
+
 ```{r Health plots}
 healthdata %>%
      gather(key,value,-EVTYPECOND) %>%
@@ -177,8 +177,76 @@ healthdata %>%
           legend.position = "bottom")+
     scale_fill_brewer(palette = "Set1")+
     labs(y="Total Number of Incidents",
-         title = "Total Fatalities and Injuries from Weather")+
+         title = "Total Fatalities and Injuries from Weather from 1996-2011")+
     guides(fill=guide_legend(title="Weather Event"))
 
 ```
 
+#### Plot Summary
+
+These plots show the total amount of fatalities and injuries as a result of 8 
+weather events from 1996-2011. These weather events were chosen as they were in
+the 75th percentile of fatalities and injuries.
+Notice the scale between fatalities and injuries differs by about
+a factor of 10 (Many more injuries than fatalities). Examining the Fatalities plot
+shows that Excessive Heat, and Tornado are the largest contributors to 
+fatalities, resulting in more than one thousand fatalities. In the total injuries
+plot, tornado, flood, and excessive heat produce that largest number of injuries.
+Based on this, Tornadoes seem to be the most harmful to population health as they
+result in large amounts of fatalities and massive amounts of injuries. Excessive
+heat is the next largest threat to health causing a large amount of fatalities and
+injuries. The hierarchy of weather events from here is less clear, but all the
+other weather events result in hundreds of fatalities and thousands of injuries.
+
+
+## Economic Consequences of Weather Events
+
+Now we will do an analysis focusing on the economic impact of weather events. 
+This will be very similar in scope to the previous analysis, focusing on events
+after 1995 and including events that caused either crop damage, or property damage.
+Then we will select events that caused the most property damage as selected by the 
+75th percentile.
+```{r Population economic analysis}
+totalcost<-stormfilt %>%
+    filter(Year>"1995" & (PROPDMGFULL>0 | CROPDMGFULL>0 )) %>%
+    group_by(EVTYPECOND) %>%
+    summarise(Total_Property_Damage=sum(PROPDMGFULL),
+              Total_Crop_Damage=sum(CROPDMGFULL))
+
+#Establishing quantle cutoff values
+quantcost<-totalcost %>%
+        summarise(quantPROP=quantile(Total_Property_Damage,probs=.75),
+              quantCROP=quantile(Total_Crop_Damage,probs=.75))
+
+Eventnames<-totalcost$EVTYPECOND[totalcost$Total_Property_Damage>quantcost$quantPROP & 
+               totalcost$Total_Crop_Damage>quantcost$quantCROP]
+
+costdata<-totalcost%>%
+    filter(EVTYPECOND %in% Eventnames)%>%
+    arrange(desc(Total_Property_Damage))
+    
+costdata$EVTYPECOND<-factor(costdata$EVTYPECOND,levels=as.character(costdata$EVTYPECOND))
+
+```
+
+
+### Plots demonstrating harmful economic effects of Severe Weather events 
+
+```{r Cost plots}
+costdata %>%
+     gather(key,value,-EVTYPECOND) %>%
+    ggplot(aes(x=reorder_within(EVTYPECOND,-value,key),y=value,
+                           fill=EVTYPECOND))+
+     geom_bar(stat="identity",position="dodge")+
+    facet_wrap(~key,scales="free")+
+    theme(axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.x = element_blank(),
+          plot.title = element_text(hjust=.5),
+          legend.position = "bottom")+
+    scale_fill_brewer(palette = "Set2")+
+    labs(y="Total Cost (in Dollars)",
+         title = "Total Crop and property damage from Weather from 1996-2011")+
+    guides(fill=guide_legend(title="Weather Event"))
+
+```
