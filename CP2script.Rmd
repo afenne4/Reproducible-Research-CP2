@@ -246,7 +246,30 @@ costdata %>%
           legend.position = "bottom")+
     scale_fill_brewer(palette = "Set2")+
     labs(y="Total Cost (in Dollars)",
-         title = "Total Crop and property damage from Weather from 1996-2011")+
+         title = "Total Crop and Property Damage from Weather from 1996-2011")+
     guides(fill=guide_legend(title="Weather Event"))
 
 ```
+
+### Plot Summary
+This figure contains two plots, one showing the total crop damage and the other total
+property damage as a result of the most damaging weather events between 1996 and 2011.
+Notice that the scales of total crop damage and total property damage are very different,
+with total crop damage maxing out at slightly less than 6 billion dollars, whereas
+total property damage maxes out at slightly less than 150 billion dollars. 
+#### Total Crop Damage
+In relation to total crop damage, hurricanes (typhoon) caused the largest amount of total
+crop damage resulting in approximately 5.5 billion dollars worth of damage. Floods
+were slightly less than this with about 5 billion dollars in damage. Hail was the
+next most crop damaging weather event causing about 2.5 billion dollars worth of
+damage. Flash floods and high winds were the next most damaging events causing a 
+little over 1 billion dollars in crop damage. Finally tropical storms and wildfires
+were next resulting in hundreds of millions dollars worth of crop damage.
+#### Total Property Damage
+In relation to total property damage, Floods resulted in slightly less than 150
+billion dollars worth of damage. The next most damaging weather event was 
+hurricane (typhoon) coming in at around 80 billion dollars worth of property damage.
+Flash floods and hail were the next most damaging weather events resulting in 
+approximately 15 billion dollars worth of damage. High winds caused almost 10 billion
+dollars worth of damage, while tropical storms and wildfires resulted in 7.5 
+billion dollars worth of damage.
