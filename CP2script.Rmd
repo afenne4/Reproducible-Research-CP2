@@ -1,5 +1,5 @@
 ---
-title: "Course Project 2"
+title: "The Effect of Weather Events on Population Health and Economy"
 author: "Alex Fennell"
 output: html_document
 ---
@@ -99,15 +99,17 @@ stormfilt<-stormfilt %>%
                 )))
 ```
 
-# Results
+### Data Selection-Population Health
 
-The data has now been cleaned and is ready to be examined. The first question
-to be addressed is which types of events are most harmful to population health.
-There are two variables in the data set, Fatalities and Injuries which will act
-as measures of population health. We will begin our analysis by examining the
-total fatalities and injuries caused by various weather event types. I am using
-total because this gives the best indication of the severity of the weather event.
-This will then help to filter out which event types are of the most interest.
+
+The first question to be addressed is which types of weather events are most 
+harmful to population health.There are two variables in the data set, Fatalities 
+and Injuries which will act as measures of population health. We will begin our 
+analysis by examining the total fatalities and injuries caused by various weather 
+event types. I am using total because this gives the best indication of the 
+severity of the weather event. This will then help to filter out which event 
+types are of the most interest.
+
 I am also only going to examine data from 1996 and on, since this is when all 
 categories of event types were collected. Otherwise the data would be extremely
 skewed to reflect data on event types that have been collected since the 
@@ -118,12 +120,11 @@ totalstats<-stormfilt %>%
     filter(Year>"1995" & (FATALITIES>0 | INJURIES>0 )) %>%
     group_by(EVTYPECOND) %>%
     summarise(Total_Fatalities=sum(FATALITIES),Total_Injuries=sum(INJURIES))
-#datatable(totalstats,class="cell-border stripe")
 ```
-### Data Selection
-The results from this analysis show that there is a wide range in total 
-fatalities/injuries from single digits to thousands. Based on this, lets use 
-event types that are above the 75 percentile for total fatalities and injuries
+
+
+Now to examine the most signficant weather events, lets use event types that are
+above the 75 percentile for total fatalities and injuries
 
 ```{r quantile data selection}
 #Establishing quantle cutoff values
@@ -142,7 +143,39 @@ healthdata$EVTYPECOND<-factor(healthdata$EVTYPECOND,levels=as.character(healthda
 
 ```
 
+### Data Selection-Economic Consequences of Weather Events
 
+
+
+Now we will do an analysis focusing on the economic impact of weather events. 
+This will be very similar in scope to the previous analysis, focusing on events
+after 1995 and including events that caused either crop damage, or property damage.
+Then we will select events that caused the most property damage as selected by the 
+75th percentile.
+```{r Population economic analysis}
+totalcost<-stormfilt %>%
+    filter(Year>"1995" & (PROPDMGFULL>0 | CROPDMGFULL>0 )) %>%
+    group_by(EVTYPECOND) %>%
+    summarise(Total_Property_Damage=sum(PROPDMGFULL),
+              Total_Crop_Damage=sum(CROPDMGFULL))
+
+#Establishing quantle cutoff values
+quantcost<-totalcost %>%
+        summarise(quantPROP=quantile(Total_Property_Damage,probs=.75),
+              quantCROP=quantile(Total_Crop_Damage,probs=.75))
+
+Eventnames<-totalcost$EVTYPECOND[totalcost$Total_Property_Damage>quantcost$quantPROP & 
+               totalcost$Total_Crop_Damage>quantcost$quantCROP]
+
+costdata<-totalcost%>%
+    filter(EVTYPECOND %in% Eventnames)%>%
+    arrange(desc(Total_Property_Damage))
+    
+costdata$EVTYPECOND<-factor(costdata$EVTYPECOND,levels=as.character(costdata$EVTYPECOND))
+
+```
+
+# Results
 
 ```{r Tidytext function}
 #### This function is part of the TIDYTEXT package authored by Julia Silge
@@ -177,7 +210,7 @@ healthdata %>%
           legend.position = "bottom")+
     scale_fill_brewer(palette = "Set1")+
     labs(y="Total Number of Incidents",
-         title = "Total Fatalities and Injuries from Weather from 1996-2011")+
+         title = "Total Fatalities and Injuries due to Weather from 1996-2011")+
     guides(fill=guide_legend(title="Weather Event"))
 
 ```
@@ -199,35 +232,6 @@ injuries. The hierarchy of weather events from here is less clear, but all the
 other weather events result in hundreds of fatalities and thousands of injuries.
 
 
-## Economic Consequences of Weather Events
-
-Now we will do an analysis focusing on the economic impact of weather events. 
-This will be very similar in scope to the previous analysis, focusing on events
-after 1995 and including events that caused either crop damage, or property damage.
-Then we will select events that caused the most property damage as selected by the 
-75th percentile.
-```{r Population economic analysis}
-totalcost<-stormfilt %>%
-    filter(Year>"1995" & (PROPDMGFULL>0 | CROPDMGFULL>0 )) %>%
-    group_by(EVTYPECOND) %>%
-    summarise(Total_Property_Damage=sum(PROPDMGFULL),
-              Total_Crop_Damage=sum(CROPDMGFULL))
-
-#Establishing quantle cutoff values
-quantcost<-totalcost %>%
-        summarise(quantPROP=quantile(Total_Property_Damage,probs=.75),
-              quantCROP=quantile(Total_Crop_Damage,probs=.75))
-
-Eventnames<-totalcost$EVTYPECOND[totalcost$Total_Property_Damage>quantcost$quantPROP & 
-               totalcost$Total_Crop_Damage>quantcost$quantCROP]
-
-costdata<-totalcost%>%
-    filter(EVTYPECOND %in% Eventnames)%>%
-    arrange(desc(Total_Property_Damage))
-    
-costdata$EVTYPECOND<-factor(costdata$EVTYPECOND,levels=as.character(costdata$EVTYPECOND))
-
-```
 
 
 ### Plots demonstrating harmful economic effects of Severe Weather events 
@@ -246,7 +250,7 @@ costdata %>%
           legend.position = "bottom")+
     scale_fill_brewer(palette = "Set2")+
     labs(y="Total Cost (in Dollars)",
-         title = "Total Crop and Property Damage from Weather from 1996-2011")+
+         title = "Total Crop and Property Damage due to Weather from 1996-2011")+
     guides(fill=guide_legend(title="Weather Event"))
 
 ```
@@ -273,3 +277,15 @@ Flash floods and hail were the next most damaging weather events resulting in
 approximately 15 billion dollars worth of damage. High winds caused almost 10 billion
 dollars worth of damage, while tropical storms and wildfires resulted in 7.5 
 billion dollars worth of damage.
+
+### Table of Economic and Population Health Consequences of Weather Events
+``` {r health and economic cost table}
+alltotal<-merge(healthdata,costdata,by="EVTYPECOND",all=TRUE)
+    datatable(alltotal,class="cell-border stripe")
+
+```
+
+
+This table shows the weather events that result in the most damage to population 
+health and the economy. This table is for the interested reader as it offers a 
+more exact amount of the costs incurred by weather events.
