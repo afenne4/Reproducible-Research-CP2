@@ -69,8 +69,8 @@ in the storm data set. These event types are listed on page 6 of the document
 under "2.1.1 Storm Data Event Table". The locate areas function brings up a UI
 showing the sixth page of the pdf which the user can use to select the area around
 the table of text. The extract tables function will then use these dimensions in
-the area argument to pull items from there. I have saved the dimensions in a list
-for the sake of reproducibility.
+the area argument to pull items from there. I have saved the dimensions of the table
+in a list for the sake of reproducibility.
 ```{r Clean Event Types, cache=TRUE}
 fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf"
 #x<-locate_areas(fileurl,pages=6)
@@ -236,20 +236,15 @@ healthdata %>%
 
 These plots show the total amount of fatalities and injuries as a result of 8 
 weather events from 1996-2011. These weather events were chosen as they were in
-the 75th percentile of fatalities and injuries.
-Notice the scale between fatalities and injuries differs by about
-a factor of 10 (Many more injuries than fatalities). Examining the Fatalities plot
-shows that Excessive Heat, and Tornado are the largest contributors to 
-fatalities, resulting in more than one thousand fatalities. In the total injuries
-plot, tornado, flood, and excessive heat produce that largest number of injuries.
-Based on this, Tornadoes seem to be the most harmful to population health as they
+the 75th percentile of fatalities and injuries. Notice the scale between 
+fatalities and injuries differs by abouta factor of 10 (Many more injuries than fatalities). 
+Examination of the Fatalities plot shows that Excessive Heat, and Tornado are the 
+largest contributors to fatalities, resulting in more than one thousand fatalities. 
+In the total injuries plot, tornado, flood, and excessive heat produce that largest number of injuries.Based on this, Tornadoes seem to be the most harmful to population health as they
 result in large amounts of fatalities and massive amounts of injuries. Excessive
 heat is the next largest threat to health causing a large amount of fatalities and
 injuries. The hierarchy of weather events from here is less clear, but all the
 other weather events result in hundreds of fatalities and thousands of injuries.
-
-
-
 
 ### Plots demonstrating harmful economic effects of Severe Weather events 
 
@@ -278,7 +273,9 @@ property damage as a result of the most damaging weather events between 1996 and
 Notice that the scales of total crop damage and total property damage are very different,
 with total crop damage maxing out at slightly less than 6 billion dollars, whereas
 total property damage maxes out at slightly less than 150 billion dollars. 
+
 #### Total Crop Damage
+
 In relation to total crop damage, hurricanes (typhoon) caused the largest amount of total
 crop damage resulting in approximately 5.5 billion dollars worth of damage. Floods
 were slightly less than this with about 5 billion dollars in damage. Hail was the
@@ -286,7 +283,9 @@ next most crop damaging weather event causing about 2.5 billion dollars worth of
 damage. Flash floods and high winds were the next most damaging events causing a 
 little over 1 billion dollars in crop damage. Finally tropical storms and wildfires
 were next resulting in hundreds of millions dollars worth of crop damage.
+
 #### Total Property Damage
+
 In relation to total property damage, Floods resulted in slightly less than 150
 billion dollars worth of damage. The next most damaging weather event was 
 hurricane (typhoon) coming in at around 80 billion dollars worth of property damage.
