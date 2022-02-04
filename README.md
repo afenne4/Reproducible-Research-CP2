@@ -10,7 +10,7 @@ Of the 37 variables there are only 8 variables that are of interest for this ana
   (there is another variable that records the actual time) in the format of H:MM:SS
   
   -EVTYPE: A character string with labels for each severe weather event occurred. There are 48
-  official event types [Storm Data Documentation][https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf] but due to data entry discrepancies, there are many more unique instances
+  official event types [Storm Data Documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf) but due to data entry discrepancies, there are many more unique instances
   than this. Details for how this was addressed are in the .Rmd and .pdf files.
   
   -
