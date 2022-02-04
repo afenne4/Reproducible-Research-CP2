@@ -22,7 +22,7 @@ Of the 37 variables there are only 8 variables that are of interest for this ana
   weather event causes (in USD)
   
   -PropDmgExp: A character variable that indicates PropDmg needs to get modified by a certain 
-  amount. $H=100 \cdot PropDmg$, K=1000 \cdot PropDmg, M=10^6 \cdot PropDmg, B=10^9 \cdot PropDmg. 
+  amount. H=100 $\times$ PropDmg, K=1000 \cdot PropDmg, M=10^6 \cdot PropDmg, B=10^9 \cdot PropDmg. 
   There are other values  but they only modify the last digit by a trivial amount, when damage 
   can be hundreds of millions of dollars.
   
