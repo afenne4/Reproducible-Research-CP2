@@ -32,5 +32,11 @@ Of the 37 variables there are only 8 variables that are of interest for this ana
   -CropDmgExp: A character variable that indicates CropDmg needs to get modified by a certain 
   amount. The modifications are the same as PropDmgExp, but are applied to CropDmg.
 
+## Files in this Repo
+The report showcasing the analysis of this data is located in the pdf file and contains the rendered figures
+There is also the R Markdown file which can be used to independently run the analysis. These files are commented 
+so the reader understands the code chunks and why certain data preparation decisions were made in addition to an 
+interpretation of the figures.
+
 
 
