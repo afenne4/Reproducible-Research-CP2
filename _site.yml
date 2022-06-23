@@ -1,0 +1,14 @@
+  name: "Severe Weather Events"
+  output_dir: "docs"
+  navbar:
+    title: "Harmful Effects of Severe Weather Events"
+    left:
+    - text: "Navigation"
+      href: index.html
+    - text: "README"
+      href: README.md
+    - text: "Data Analysis"
+      href: CP2script.html
+  output:
+    html_document:
+      theme: cosmo
