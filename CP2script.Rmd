@@ -2,7 +2,6 @@
 title: "The Effect of Weather Events on Population Health and Economy"
 author: "Alex Fennell"
 output: html_document
-
 ---
 # Synopsis
 In this report we examine the economic and public health consequences of severe 
@@ -95,7 +94,7 @@ damage value by a trivial amount (hundreds of dollars) and these will be removed
 from the data set, since they will not have a large impact on the analysis as 
 damage is typically in the millions or billions. These entries also only account
 for a couple hundred observations.
-```{r Update damage costs,cache=TRUE}
+```{r Update damage costs}
 stormfilt$PROPDMGEXP <- toupper(stormfilt$PROPDMGEXP) 
 stormfilt$CROPDMGEXP <- toupper(stormfilt$CROPDMGEXP)
 #Instances of *EXP I am looking to keep
@@ -214,7 +213,7 @@ reorder_within <- function(x, by, within, fun = mean, sep = "___", ...) {
 
 ### Plots Demonstrating harmful effects of Severe Weather events on Population Health
 
-```{r Health plots,fig.height=4,fig.width=7}
+```{r Health plots}
 healthdata %>%
      gather(key,value,-EVTYPECOND) %>%
     ggplot(aes(x=reorder_within(EVTYPECOND,-value,key),y=value,
@@ -249,7 +248,7 @@ other weather events result in hundreds of fatalities and thousands of injuries.
 
 ### Plots demonstrating harmful economic effects of Severe Weather events 
 
-```{r Cost plots,fig.height=4,fig.width=7}
+```{r Cost plots}
 costdata %>%
      gather(key,value,-EVTYPECOND) %>%
     ggplot(aes(x=reorder_within(EVTYPECOND,-value,key),y=value,
@@ -295,13 +294,13 @@ approximately 15 billion dollars worth of damage. High winds caused almost 10 bi
 dollars worth of damage, while tropical storms and wildfires resulted in 7.5 
 billion dollars worth of damage.
 
-
 ### Table of Economic and Population Health Consequences of Weather Events
 For the interested reader who wants exact values for the variables of interest,
 I have also included this table which shows values for all weather events.
 ``` {r health and economic cost table}
 alltotal<-merge(totalstats,totalcost,by="EVTYPECOND",all=TRUE)
     datatable(alltotal,class="cell-border stripe")
+
 ```
 
 
