@@ -1,9 +1,9 @@
 ---
-title: "README"
+
 output: html_document
 ---
 
-# Reproducible Research-Economic and Public Health Consequences of Severe Weather Events
+# Economic and Public Health Consequences of Severe Weather Events
 For this project, data from the U.S. National Oceanic and Atmospheric Administration’s (NOAA) storm database
 was obtained and used to answer the questions of what severe weather events cause the most damage in relation
 to the economy and public health. A simple exploratory data analysis was conducted to answer this question. 
