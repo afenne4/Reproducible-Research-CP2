@@ -16,8 +16,6 @@ heat and floods. In relation to the economic consequences, hurricanes and floodi
 were the most costly weather events, followed by flash floods and hail.
 
 ```{r libraries, message=FALSE,warning=FALSE}
-    library(dplyr)
-    library(ggplot2)
     library(tidyverse)
     library(stringdist)
 ## As a note, for tabulizer, the user needs to have Java installed as the same 

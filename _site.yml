@@ -6,7 +6,7 @@
     - text: "Navigation"
       href: index.html
     - text: "README"
-      href: README.md
+      href: README.html
     - text: "Data Analysis"
       href: CP2script.html
   output:
