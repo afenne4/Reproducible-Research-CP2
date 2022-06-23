@@ -30,7 +30,8 @@ The data is obtained from the NOAA storm database. We first download the file an
 then use the read csv function as it can handle .bz2 files. We use stringsAsFactors
 = FALSE since we need to clean up the data and it will be easier to do that when
 the data is formatted as strings.
-```{r download-data, cache=TRUE}
+```{r download-data, cache=TRUE,warning=FALSE}
+
 fileurl<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 if (!file.exists("CP2data.csv.bz2")){
     download.file(fileurl,"CP2data.csv.bz2",method="curl")
@@ -192,7 +193,7 @@ costdata$EVTYPECOND<-factor(costdata$EVTYPECOND,levels=as.character(costdata$EVT
 
 # Results
 
-```{r Tidytext function}
+```{r Tidytext function, echo=FALSE}
 #### This function is part of the TIDYTEXT package authored by Julia Silge
 #### and David Robinson. The package was not downloading this function
 #### so I used the code they have documented in the function
