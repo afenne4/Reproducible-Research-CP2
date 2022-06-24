@@ -284,12 +284,12 @@ Health and Economy</h1>
 
 <div id="synopsis" class="section level1">
 <h1>Synopsis</h1>
-<p>In this report we examine the economic and public health consequences
+<p>In this report I examine the economic and public health consequences
 of severe weather events. The data is obtained from the U.S. National
 Oceanic and Atmospheric Administration’s (NOAA) storm database. The data
 includes records from 1950-2011 which contain information such as where
 and when the weather events occur as well as information on fatalities,
-injuries, and property damage. We narrowed our search to include the
+injuries, and property damage. I narrowed the search to include the
 years between 1996-2011 as this was when all the currently available
 weather events were recorded. Based on this time window, tornadoes were
 the most dangerous weather event in relation to public health followed
@@ -305,16 +305,16 @@ flash floods and hail.</p>
     library(RColorBrewer)</code></pre>
 <div id="data-processing" class="section level2">
 <h2>Data Processing</h2>
-<p>The data is obtained from the NOAA storm database. We first download
+<p>The data is obtained from the NOAA storm database. I first download
 the file and then use the read csv function as it can handle .bz2 files.
-We use stringsAsFactors = FALSE since we need to clean up the data and
-it will be easier to do that when the data is formatted as strings.</p>
+I use stringsAsFactors = FALSE since I need to clean up the data and it
+will be easier to do that when the data is formatted as strings.</p>
 <pre class="r"><code>fileurl&lt;-&quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2&quot;
 if (!file.exists(&quot;CP2data.csv.bz2&quot;)){
     download.file(fileurl,&quot;CP2data.csv.bz2&quot;,method=&quot;curl&quot;)
 }
 storm&lt;-read.csv(&quot;CP2data.csv.bz2&quot;,stringsAsFactors = FALSE)</code></pre>
-<p>Now we can do a quick check of the data to make sure there are the
+<p>Now I can do a quick check of the data to make sure there are the
 correct number of observations and columns (902297 and 37 respectively)
 and its structure.</p>
 <pre class="r"><code>str(storm)</code></pre>
@@ -356,13 +356,12 @@ and its structure.</p>
 ##  $ LONGITUDE_: num  8806 0 0 0 0 ...
 ##  $ REMARKS   : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
 ##  $ REFNUM    : num  1 2 3 4 5 6 7 8 9 10 ...</code></pre>
-<p>Since we are interested in the public health and economic
-consequences of various event types, the first thing I want to do is
-select rows that have some amount of property damage, crop damage,
-fatalities, or injuries. I also change the date to a usable format and
-extract the year information so I can more easily examine data from
-particular years. I also remove event types of “?” since that is not a
-useful category.</p>
+<p>Since I am interested in the public health and economic consequences
+of various event types, the first thing I want to do is select rows that
+have some amount of property damage, crop damage, fatalities, or
+injuries. I also change the date to a usable format and extract the year
+information so I can more easily examine data from particular years. I
+also remove event types of “?” since that is not a useful category.</p>
 <pre class="r"><code>stormfilt&lt;-storm%&gt;%
     filter(PROPDMG&gt;0 | CROPDMG&gt;0 | FATALITIES&gt;0 | INJURIES&gt;0)
 
@@ -428,7 +427,7 @@ stormfilt&lt;-stormfilt %&gt;%
 <p>The first question to be addressed is which types of weather events
 are most harmful to population health.There are two variables in the
 data set, Fatalities and Injuries which will act as measures of
-population health. We will begin our analysis by examining the total
+population health. I will begin the analysis by examining the total
 fatalities and injuries caused by various weather event types. I am
 using total because this gives the best indication of the severity of
 the weather event. This will then help to filter out which event types
@@ -461,10 +460,10 @@ healthdata$EVTYPECOND&lt;-factor(healthdata$EVTYPECOND,levels=as.character(healt
 <div id="data-selection-economic-consequences-of-weather-events"
 class="section level3">
 <h3>Data Selection-Economic Consequences of Weather Events</h3>
-<p>Now we will do an analysis focusing on the economic impact of weather
+<p>Now I will do an analysis focusing on the economic impact of weather
 events. This will be very similar in scope to the previous analysis,
 focusing on events after 1995 and including events that caused either
-crop damage, or property damage. Then we will select events that caused
+crop damage, or property damage. Then I will select events that caused
 the most property damage as selected by the 75th percentile.</p>
 <pre class="r"><code>totalcost&lt;-stormfilt %&gt;%
     filter(Year&gt;&quot;1995&quot; &amp; (PROPDMGFULL&gt;0 | CROPDMGFULL&gt;0 )) %&gt;%
@@ -594,8 +593,8 @@ interest, I have also included this table which shows values for all
 weather events.</p>
 <pre class="r"><code>alltotal&lt;-merge(totalstats,totalcost,by=&quot;EVTYPECOND&quot;,all=TRUE)
     datatable(alltotal,class=&quot;cell-border stripe&quot;)</code></pre>
-<div id="htmlwidget-50b55136ee52d516aa5c" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-50b55136ee52d516aa5c">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46"],["ASTRONOMICAL LOW TIDE","AVALANCHE","BLIZZARD","COASTAL FLOOD","COLD/WIND CHILL","DENSE FOG","DENSE SMOKE","DROUGHT","DUST DEVIL","DUST STORM","EXCESSIVE HEAT","EXTREME COLD/WIND CHILL","FLASH FLOOD","FLOOD","FREEZING FOG","FROST/FREEZE","FUNNEL CLOUD","HAIL","HEAT","HEAVY RAIN","HEAVY SNOW","HIGH SURF","HIGH WIND","HURRICANE (TYPHOON)","ICE STORM","LAKE-EFFECT SNOW","LAKESHORE FLOOD","LIGHTNING","MARINE HAIL","MARINE HIGH WIND","MARINE STRONG WIND","MARINE THUNDERSTORM WIND","RIP CURRENT","SEICHE","STORM SURGE/TIDE","STRONG WIND","THUNDERSTORM WIND","TORNADO","TROPICAL DEPRESSION","TROPICAL STORM","TSUNAMI","VOLCANIC ASH","WATERSPOUT","WILDFIRE","WINTER STORM","WINTER WEATHER"],[null,223,70,34,113,9,null,12,7,14,1797,258,926,475,5,1,0,7,247,146,107,97,481,125,85,null,1,652,6,1,28,10,545,2,16,115,132,1525,6,58,33,1,2,105,194,61],[null,156,385,87,24,143,null,10,41,396,6393,108,1727,7471,13,5,1,713,1292,318,700,157,4724,1323,319,null,212,4143,107,1,40,26,528,0,77,317,1406,20671,48,338,129,24,7,1540,1370,485],[9745000,3711800,525658950,465528210,2544000,7319000,100000,1046133000,2010730,5524000,9658700,29263400,15567693910,144064145050,3113000,18495000,134100,14595143420,1520000,610726440,634427540,84124500,9736182800,81118659010,3642260810,40182000,7690000,746126080,44759500,1297010,6104330,436400,1895600,980000,47834824000,179900740,3382746940,24616945710,3008200,7642475550,144081000,500000,605967200,7762739000,1532835750,28298000],[0,0,7060000,8488100,600000,0,0,13367566000,0,3110000,492402000,1326023000,1356793700,5002798400,156725000,1170036000,30142500,2476029450,176500,729669800,113122100,0,1187686650,5349282800,15660000,0,0,6898440,85739250,0,10000000,50000,15000,0,855000,64953500,399365400,283425010,0,677711000,20000,0,825000,402555130,11944000,15000000]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>EVTYPECOND<\/th>\n      <th>Total_Fatalities<\/th>\n      <th>Total_Injuries<\/th>\n      <th>Total_Property_Damage<\/th>\n      <th>Total_Crop_Damage<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-af046212128fc26fe917" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-af046212128fc26fe917">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46"],["ASTRONOMICAL LOW TIDE","AVALANCHE","BLIZZARD","COASTAL FLOOD","COLD/WIND CHILL","DENSE FOG","DENSE SMOKE","DROUGHT","DUST DEVIL","DUST STORM","EXCESSIVE HEAT","EXTREME COLD/WIND CHILL","FLASH FLOOD","FLOOD","FREEZING FOG","FROST/FREEZE","FUNNEL CLOUD","HAIL","HEAT","HEAVY RAIN","HEAVY SNOW","HIGH SURF","HIGH WIND","HURRICANE (TYPHOON)","ICE STORM","LAKE-EFFECT SNOW","LAKESHORE FLOOD","LIGHTNING","MARINE HAIL","MARINE HIGH WIND","MARINE STRONG WIND","MARINE THUNDERSTORM WIND","RIP CURRENT","SEICHE","STORM SURGE/TIDE","STRONG WIND","THUNDERSTORM WIND","TORNADO","TROPICAL DEPRESSION","TROPICAL STORM","TSUNAMI","VOLCANIC ASH","WATERSPOUT","WILDFIRE","WINTER STORM","WINTER WEATHER"],[null,223,70,34,113,9,null,12,7,14,1797,258,926,475,5,1,0,7,247,146,107,97,481,125,85,null,1,652,6,1,28,10,545,2,16,115,132,1525,6,58,33,1,2,105,194,61],[null,156,385,87,24,143,null,10,41,396,6393,108,1727,7471,13,5,1,713,1292,318,700,157,4724,1323,319,null,212,4143,107,1,40,26,528,0,77,317,1406,20671,48,338,129,24,7,1540,1370,485],[9745000,3711800,525658950,465528210,2544000,7319000,100000,1046133000,2010730,5524000,9658700,29263400,15567693910,144064145050,3113000,18495000,134100,14595143420,1520000,610726440,634427540,84124500,9736182800,81118659010,3642260810,40182000,7690000,746126080,44759500,1297010,6104330,436400,1895600,980000,47834824000,179900740,3382746940,24616945710,3008200,7642475550,144081000,500000,605967200,7762739000,1532835750,28298000],[0,0,7060000,8488100,600000,0,0,13367566000,0,3110000,492402000,1326023000,1356793700,5002798400,156725000,1170036000,30142500,2476029450,176500,729669800,113122100,0,1187686650,5349282800,15660000,0,0,6898440,85739250,0,10000000,50000,15000,0,855000,64953500,399365400,283425010,0,677711000,20000,0,825000,402555130,11944000,15000000]],"container":"<table class=\"cell-border stripe\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>EVTYPECOND<\/th>\n      <th>Total_Fatalities<\/th>\n      <th>Total_Injuries<\/th>\n      <th>Total_Property_Damage<\/th>\n      <th>Total_Crop_Damage<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>This table shows the weather events that result in damage to
 population health or the economy between 1996 and 2011.</p>
 </div>

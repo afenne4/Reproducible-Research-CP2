@@ -4,11 +4,11 @@ author: "Alex Fennell"
 output: html_document
 ---
 # Synopsis
-In this report we examine the economic and public health consequences of severe 
+In this report I examine the economic and public health consequences of severe 
 weather events. The data is obtained from the U.S. National Oceanic and Atmospheric
 Administration's (NOAA) storm database. The data includes records from 1950-2011 which
 contain information such as where and when the weather events occur as well as
-information on fatalities, injuries, and property damage. We narrowed our search
+information on fatalities, injuries, and property damage. I narrowed the search
 to include the years between 1996-2011 as this was when all the currently 
 available weather events were recorded. Based on this time window, tornadoes were
 the most dangerous weather event in relation to public health followed by excessive
@@ -26,9 +26,9 @@ were the most costly weather events, followed by flash floods and hail.
 ```
 
 ## Data Processing
-The data is obtained from the NOAA storm database. We first download the file and
-then use the read csv function as it can handle .bz2 files. We use stringsAsFactors
-= FALSE since we need to clean up the data and it will be easier to do that when
+The data is obtained from the NOAA storm database. I first download the file and
+then use the read csv function as it can handle .bz2 files. I use stringsAsFactors
+= FALSE since I need to clean up the data and it will be easier to do that when
 the data is formatted as strings.
 ```{r download-data, cache=TRUE,warning=FALSE}
 
@@ -39,13 +39,13 @@ if (!file.exists("CP2data.csv.bz2")){
 storm<-read.csv("CP2data.csv.bz2",stringsAsFactors = FALSE)
 ```
 
-Now we can do a quick check of the data to make sure there are the correct number
+Now I can do a quick check of the data to make sure there are the correct number
 of observations and columns (902297 and 37 respectively) and its structure.
 ```{r}
 str(storm)
 ```
 
-Since we are interested in the public health and economic consequences of various
+Since I am interested in the public health and economic consequences of various
 event types, the first thing I want to do is select rows that have some amount of
 property damage, crop damage, fatalities, or injuries. I also change the date
 to a usable format and extract the year information so I can more easily examine
@@ -122,7 +122,7 @@ stormfilt<-stormfilt %>%
 
 The first question to be addressed is which types of weather events are most 
 harmful to population health.There are two variables in the data set, Fatalities 
-and Injuries which will act as measures of population health. We will begin our 
+and Injuries which will act as measures of population health. I will begin the 
 analysis by examining the total fatalities and injuries caused by various weather 
 event types. I am using total because this gives the best indication of the 
 severity of the weather event. This will then help to filter out which event 
@@ -163,10 +163,10 @@ healthdata$EVTYPECOND<-factor(healthdata$EVTYPECOND,levels=as.character(healthda
 
 ### Data Selection-Economic Consequences of Weather Events
 
-Now we will do an analysis focusing on the economic impact of weather events. 
+Now I will do an analysis focusing on the economic impact of weather events. 
 This will be very similar in scope to the previous analysis, focusing on events
 after 1995 and including events that caused either crop damage, or property damage.
-Then we will select events that caused the most property damage as selected by the 
+Then I will select events that caused the most property damage as selected by the 
 75th percentile.
 ```{r Population economic analysis}
 totalcost<-stormfilt %>%
